@@ -1,4 +1,6 @@
-# A user-friendly command-line client for the ChatGPT
+# GPTie
+
+User-friendly command-line client for the ChatGPT.
 
 ## Installation
 
