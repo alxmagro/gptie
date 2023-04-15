@@ -1,3 +1,5 @@
+# A user-friendly command-line client for the ChatGPT
+
 ## Installation
 
 - Install:
