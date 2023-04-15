@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexandremagro/gptie.git"
+    "url": "https://github.com/alxmagro/gptie.git"
   },
   "dependencies": {
     "openai": "^3.2.1"
