@@ -5,20 +5,6 @@ import config from './config.js'
 
 const chat = []
 
-function pushChat (role, content) {
-  const last = chat[chat.length - 1]
-  
-  if (last && last.role == role) {
-    last.content += content
-  } else {
-    chat.push({ role, content })
-  }
-
-  while (chat.length > config.terminal.MESSAGES_MAX_SIZE) {
-    chat.splice(0, 1)
-  }
-}
-
 export default class Terminal {
   constructor (delimiter) {
     this.delimiter = delimiter || config.terminal.BLOCK_DELIMITER
@@ -32,11 +18,25 @@ export default class Terminal {
     })
   }
 
+  pushChat (role, content) {
+    const last = chat[chat.length - 1]
+
+    if (last && last.role == role) {
+      last.content += content
+    } else {
+      chat.push({ role, content })
+    }
+
+    while (chat.length > config.terminal.MESSAGES_MAX_SIZE) {
+      chat.splice(0, 1)
+    }
+  }
+
   send (forward) {
-    pushChat('user', this.lines.join('\n'))
+    this.pushChat('user', this.lines.join('\n'))
 
     this.reader.pause()
-    
+
     stdout.write('\n')
 
     forward(chat)
@@ -45,8 +45,8 @@ export default class Terminal {
   receive (body) {
     const output = format(config.terminal.OUTPUT_TEMPLATE, body)
 
-    pushChat('assistant', body, { fragment: true })
-  
+    this.pushChat('assistant', body, { fragment: true })
+
     stdout.write(output)
   }
 
@@ -64,7 +64,7 @@ export default class Terminal {
   listen (forward) {
     this.reader.on('SIGINT', () => {
       this.close()
-      
+
       stdout.write(config.terminal.EXIT_MESSAGE + '\n')
     })
     this.reader.on('line', (line) => {
@@ -78,7 +78,7 @@ export default class Terminal {
       }
 
       this.lines.push(line)
-      
+
       if (!this.blockOpened) {
         this.send(forward)
       } else {
