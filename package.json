@@ -1,0 +1,19 @@
+{
+  "name": "gptie",
+  "version": "1.0.0",
+  "description": "User-friendly command-line client for the ChatGPT",
+  "keywords": [
+    "chatbot",
+    "gpt",
+    "openai",
+    "cli",
+    "command-line"
+  ],
+  "main": "gptie.js",
+  "type": "module",
+  "author": "Alexandre Magro <alexandremagro@live.com>",
+  "license": "MIT",
+  "dependencies": {
+    "openai": "^3.2.1"
+  }
+}
