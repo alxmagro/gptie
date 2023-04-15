@@ -1,7 +1,7 @@
-import { argv } from 'node:process'
+#!/usr/bin/env node
 
-import Terminal from './src/terminal.js'
-import { createChat } from './src/api.js'
+import { argv } from 'node:process'
+import Terminal, { createChat } from '../index.js'
 
 // arguments
 
