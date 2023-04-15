@@ -10,8 +10,8 @@ User-friendly command-line client for the ChatGPT.
 npm install -g gptie
 ```
 
-- Generate the API key from the OpenAI dashboard;
-- Set the API key as the `OPENAI_API_KEY` environment variable;
+- Generate the API key from the OpenAI dashboard
+- Set the API key as the `OPENAI_API_KEY` environment variable
 
 
 ## Basic Usage
@@ -41,8 +41,8 @@ $ gptie -d "==="
 
 ## Configuration
 
-- `OPENAI_API_KEY`: OpenAI API key. (*required)
-- `OPEN_API_MODEL`: Specify GPT model in OpenAI; (default is 'gpt-3.5-turbo')
+- `OPENAI_API_KEY`: OpenAI API key (*required)
+- `OPEN_API_MODEL`: Specify GPT model in OpenAI (default is 'gpt-3.5-turbo')
 - `GTPIE_BLOCK_DELIMITER`: Define block delimiter (default is '---')
 - `GPTIE_MESSAGES_MAX_SIZE`: Define the max number of messages send on request payload
   (default is '16')
