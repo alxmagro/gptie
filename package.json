@@ -13,6 +13,10 @@
   "type": "module",
   "author": "Alexandre Magro <alexandremagro@live.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexandremagro/gptie.git"
+  },
   "dependencies": {
     "openai": "^3.2.1"
   }
