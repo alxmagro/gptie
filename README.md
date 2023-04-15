@@ -13,8 +13,9 @@ npm install -g gptie
 - Generate the API key from the OpenAI dashboard
 - Set the API key as the `OPENAI_API_KEY` environment variable
 
-
 ## Basic Usage
+
+Just type, use `---` delimiter to write multiple lines, and `Ctrl-C` to exit:
 
 <p align="center">
   <img src="assets/example.png"/>
