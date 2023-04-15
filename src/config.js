@@ -4,7 +4,7 @@ export default {
   api: {
     ERROR_LABEL: '\x1b[31mERROR\x1b[0m',
     API_KEY: env.OPENAI_API_KEY,
-    API_MODEL: env.OPEN_API_MODEL || 'gpt-3.5-turbo'
+    OPENAI_MODEL: env.GTPIE_OPENAI_MODEL || 'gpt-3.5-turbo'
   },
   terminal: {
     PROMPT: "\x1b[36mgptie \x1b[0m",

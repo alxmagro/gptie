@@ -22,35 +22,35 @@ export async function createChat(body, callbacks = {}) {
   try {
     const response = await openai.createChatCompletion(
       {
-        model: config.api.API_MODEL,
+        model: config.api.OPENAI_MODEL,
         messages: messages,
         stream: true,
       },
       { responseType: 'stream' }
     )
-    
+
     const stream = response.data
-    
+
     stream.on('data', (chunk) => {
       // Messages in the event stream are separated by a pair of newline characters.
-      
+
       const payloads = chunk.toString().split("\n\n")
-      
+
       for (const payload of payloads) {
         if (payload.includes('[DONE]')) return;
         if (payload.startsWith("data:")) {
           // in case there's multiline data event
           const data = payload.replaceAll(/(\n)?^data:\s*/g, '')
-          
+
           try {
             const delta = JSON.parse(data.trim())
             const content = delta.choices[0].delta?.content
-    
+
             if (content !== undefined) {
               callbacks.data(content)
             }
           } catch (error) {
-            // nothing   
+            // nothing
           }
         }
       }
