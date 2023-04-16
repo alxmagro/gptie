@@ -43,8 +43,8 @@ $ gptie -d "==="
 ## Configuration
 
 - `OPENAI_API_KEY`: OpenAI API key **(required)**
-- `GTPIE_OPENAI_MODEL`: Specify GPT model in OpenAI (default: `'gpt-3.5-turbo'`)
-- `GTPIE_BLOCK_DELIMITER`: Define block delimiter (default: `'---'`)
+- `GPTIE_OPENAI_MODEL`: Specify GPT model in OpenAI (default: `'gpt-3.5-turbo'`)
+- `GPTIE_DEFAULT_DELIMITER`: Define block delimiter (default: `'---'`)
 - `GPTIE_MESSAGES_MAX_SIZE`: Define the max number of messages send on request payload
   (default: `'16'`)
 

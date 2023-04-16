@@ -3,89 +3,99 @@ import { stdin, stdout } from 'node:process'
 import { format } from 'node:util'
 import config from './config.js'
 
-const chat = []
+export function createTerminal(prompt, options = {}) {
+  const log = []
+  const lines = []
+  const delimiter = options.delimiter || config.terminal.DEFAULT_DELIMITER
+  const reader = readline.createInterface({
+    input: stdin,
+    output: stdout,
+    history: [],
+    prompt: prompt
+  })
 
-export default class Terminal {
-  constructor (delimiter) {
-    this.delimiter = delimiter || config.terminal.BLOCK_DELIMITER
-    this.blockOpened = false
-    this.lines = []
-    this.reader = readline.createInterface({
-      input: stdin,
-      output: stdout,
-      history: [],
-      prompt: config.terminal.PROMPT
-    })
-  }
+  debugger
 
-  pushChat (role, content) {
-    const last = chat[chat.length - 1]
+  let isBlock = false
+
+  const memorize = function (role, content) {
+    const last = log[log.length - 1]
 
     if (last && last.role == role) {
       last.content += content
     } else {
-      chat.push({ role, content })
+      log.push({ role, content })
     }
 
-    while (chat.length > config.terminal.MESSAGES_MAX_SIZE) {
-      chat.splice(0, 1)
+    while (log.length > config.terminal.MESSAGES_MAX_SIZE) {
+      log.splice(0, 1)
     }
   }
 
-  send (forward) {
-    this.pushChat('user', this.lines.join('\n'))
+  const submit = function (onSubmit) {
+    const content = lines.join('\n').trim()
 
-    this.reader.pause()
+    if (content.length > 0) {
+      memorize('user', lines.join('\n'))
+      lines.length = 0
 
-    stdout.write('\n')
+      reader.pause()
+      stdout.write('\n')
 
-    forward(chat)
+      onSubmit(log)
+    }
   }
 
-  receive (body) {
+  const receive = function (body) {
     const output = format(config.terminal.OUTPUT_TEMPLATE, body)
 
-    this.pushChat('assistant', body, { fragment: true })
+    memorize('assistant', body)
 
     stdout.write(output)
   }
 
-  prompt () {
-    this.lines = []
+  const ready = function () {
+    if (reader.history.length > 0)
+      stdout.write('\n')
 
-    this.reader.resume()
-    this.reader.prompt()
+    reader.resume()
+    reader.prompt()
   }
 
-  close () {
-    this.reader.close()
+  const close = function () {
+    reader.close()
   }
 
-  listen (forward) {
-    this.reader.on('SIGINT', () => {
-      this.close()
+  const listen = function (onSubmit) {
+    reader.on('SIGINT', () => {
+      close()
 
       stdout.write(config.terminal.EXIT_MESSAGE + '\n')
     })
-    this.reader.on('line', (line) => {
-      if (line == '' && this.lines.length == 0) {
-        this.reader.prompt()
+
+    reader.on('line', (line) => {
+      if (line == '' && lines.length == 0) {
+        reader.prompt()
         return
       }
 
-      if (line == this.delimiter) {
-        this.blockOpened = !this.blockOpened
+      if (line == delimiter) {
+        isBlock = !isBlock
       }
 
-      this.lines.push(line)
+      if (line != delimiter) {
+        lines.push(line)
+      }
 
-      if (!this.blockOpened) {
-        this.send(forward)
+      if (!isBlock) {
+        submit(onSubmit)
       } else {
-        this.reader.prompt()
+        reader.prompt()
       }
     })
 
-    this.reader.prompt()
+    reader.prompt()
   }
+
+  return { listen, receive, ready, close }
 }

@@ -9,9 +9,9 @@
     "cli",
     "command-line"
   ],
-  "main": "bin/gptie.js",
+  "main": "index.js",
   "type": "module",
-  "bin": "bin/gptie.js",
+  "bin": "bin.js",
   "author": "Alexandre Magro <alexandremagro@live.com>",
   "license": "MIT",
   "repository": {
