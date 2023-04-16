@@ -14,8 +14,6 @@ export function createTerminal(prompt, options = {}) {
     prompt: prompt
   })
 
-  debugger
-
   let isBlock = false
 
   const memorize = function (role, content) {
@@ -46,6 +44,13 @@ export function createTerminal(prompt, options = {}) {
     }
   }
 
+  const write = function (body) {
+    reader.write(`${body}\n`)
+
+    if (isBlock)
+      reader.write('\n')
+  }
+
   const receive = function (body) {
     const output = format(config.terminal.OUTPUT_TEMPLATE, body)
 
@@ -67,6 +72,22 @@ export function createTerminal(prompt, options = {}) {
   }
 
   const listen = function (onSubmit) {
+    // pipe operator mode
+
+    if (!stdin.isTTY || !stdout.isTTY) {
+      reader.prompt()
+
+      stdout.write(delimiter + '\n')
+      isBlock = true
+
+      stdin.on('end', () => {
+        stdout.write(delimiter + '\n')
+        isBlock = false
+
+        submit(onSubmit)
+      })
+    }
+
     reader.on('SIGINT', () => {
       close()
 
@@ -97,5 +118,5 @@ export function createTerminal(prompt, options = {}) {
     reader.prompt()
   }
 
-  return { listen, receive, ready, close }
+  return { listen, write, receive, ready, close }
 }
