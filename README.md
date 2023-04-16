@@ -21,11 +21,25 @@ Just type, use `---` delimiter to write multiple lines, and `Ctrl-C` to exit:
   <img src="assets/example.png"/>
 </p>
 
+## Advanced Usage
+
+Append `stderr` to query to understand the errors:
+
+```shell
+$ node ./bug.js |& gptie -q "What is the error?"
+```
+
+Append `stdout` to query to understand the changes or to generate the commit message:
+
+```shell
+$ git diff | gptie -q "Explain me the changes"
+```
+
 ## Arguments
 
 - `-q` - Query mode
 
-```
+```shell
 $ gptie -q "how old is the universe?"
 ```
 

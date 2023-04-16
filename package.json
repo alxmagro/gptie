@@ -1,6 +1,6 @@
 {
   "name": "gptie",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "User-friendly command-line client for the ChatGPT",
   "keywords": [
     "chatbot",
