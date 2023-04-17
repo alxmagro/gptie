@@ -65,6 +65,9 @@ $ gptie -d "==="
   (default: `'16'`)
 - `GPTIE_OPENAI_MODEL`: Specify GPT model on chat requests (default: `'gpt-3.5-turbo'`)
 - `GPTIE_OPENAI_TEMPERATURE`: Specify GPT temperature on chat requests (default: `'1'`)
+- `GPTIE_OUTPUT_COLOR_NAME`: Override default output color. Standard colors are available:
+  [`'DEFAULT'`, `'BLACK'`, `'RED'`, `'GREEN'`, `'YELLOW'`, `'BLUE'`, `'MAGENTA'`, `'CYAN'`,
+  `'WHITE'`]
 
 ## License
 

@@ -125,7 +125,7 @@ export function createTerminal(prompt, options = {}) {
   }
 
   const output = function (body) {
-    stdout.write(`${config.outputColor}${body}${colors.DEFAULT}`)
+    stdout.write(body)
   }
 
   return { listen, close, input, output }

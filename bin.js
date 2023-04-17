@@ -24,11 +24,17 @@ if (version) {
   exit(0)
 }
 
+if (config.OUTPUT_COLOR_NAME && !colors[config.OUTPUT_COLOR_NAME]) {
+  console.log('GPTIE_OUTPUT_COLOR_NAME not found: ' + config.OUTPUT_COLOR_NAME)
+  console.log('Available colors: ' + Object.keys(colors).join(', '))
+  console.log()
+}
+
 const terminal = createTerminal('gptie ', {
   delimiter: delimiter,
   spaced: true,
   promptColor: colors.CYAN,
-  outputColor: colors.GREEN
+  outputColor: colors[config.OUTPUT_COLOR_NAME] || colors.GREEN
 })
 const { requestStream } = createChat(model)
 

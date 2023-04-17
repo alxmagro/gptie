@@ -10,11 +10,13 @@ Options:
 
 Options for Environment Variables:
   OPENAI_API_KEY                   OpenAI API key (required)
-  GPTIE_OPENAI_MODEL               Define the default model to be used on chat requests with OpenAI
-                                  (Default: 'gpt-3.5-turbo')
-  GPTIE_OPENAI_TEMPERATURE         Define the default temperature to be used on chat requests with OpenAI
-                                  (Default: '1')
   GPTIE_DEFAULT_DELIMITER          Define the delimiter to be used to separate inputs
                                   (Default: '---')
   GPTIE_MESSAGES_PER_CONVERSATION  Define the max number of messages to be sent on request payload
                                   (Default: '16')
+  GPTIE_OPENAI_MODEL               Define the default model to be used on chat requests with OpenAI
+                                  (Default: 'gpt-3.5-turbo')
+  GPTIE_OPENAI_TEMPERATURE         Define the default temperature to be used on chat requests with OpenAI
+                                  (Default: '1')
+  GPTIE_OUTPUT_COLOR_NAME          Define the output color. Standard colors are available:
+                                  [DEFAULT, BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE]
