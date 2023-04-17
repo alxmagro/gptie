@@ -37,13 +37,13 @@ $ git diff | gptie -q "Explain me the changes"
 
 ## Arguments
 
-- `-q` - Query mode
+- `-q "QUERY"` - Query mode
 
 ```shell
 $ gptie -q "how old is the universe?"
 ```
 
-- `d` - Override block delimiter
+- `-d "DELIMITER"` - Override block delimiter
 
 ```
 $ gptie -d "==="
@@ -54,12 +54,18 @@ $ gptie -d "==="
 > ===
 ```
 
+- Pipe operator
+
+```shell
+$ git diff | gptie
+```
+
 ## Configuration
 
 - `OPENAI_API_KEY`: OpenAI API key **(required)**
 - `GPTIE_OPENAI_MODEL`: Specify GPT model in OpenAI (default: `'gpt-3.5-turbo'`)
 - `GPTIE_DEFAULT_DELIMITER`: Define block delimiter (default: `'---'`)
-- `GPTIE_MESSAGES_MAX_SIZE`: Define the max number of messages send on request payload
+- `GPTIE_MESSAGES_PER_CONVERSATION`: Define the max number of messages send on request payload
   (default: `'16'`)
 
 ## License

@@ -1,122 +1,132 @@
 import readline from 'readline'
 import { stdin, stdout } from 'node:process'
 import { format } from 'node:util'
-import config from './config.js'
+
+export const colors = {
+  DEFAULT: '\x1b[0m',
+  BLACK:   '\x1b[30m',
+  RED:     '\x1b[31m',
+  GREEN:   '\x1b[32m',
+  YELLOW:  '\x1b[33m',
+  BLUE:    '\x1b[34m',
+  MAGENTA: '\x1b[35m',
+  CYAN:    '\x1b[36m',
+  WHITE:   '\x1b[37m'
+}
 
 export function createTerminal(prompt, options = {}) {
-  const log = []
-  const lines = []
-  const delimiter = options.delimiter || config.terminal.DEFAULT_DELIMITER
+  const states = {
+    input: false,
+    block: false
+  }
+  const config = {
+    delimiter: options.delimiter || false,
+    spaced: options.spaced || false,
+    exitMessage: options.exitMessage || '^C',
+    promptColor: options.promptColor || colors.DEFAULT,
+    outputColor: options.outputColor || colors.DEFAULT
+  }
   const reader = readline.createInterface({
     input: stdin,
     output: stdout,
     history: [],
-    prompt: prompt
+    prompt: `${config.promptColor}${prompt}${colors.DEFAULT}`
   })
 
-  let isBlock = false
+  let inputs = []
 
-  const memorize = function (role, content) {
-    const last = log[log.length - 1]
+  // listen user input
+  const listen = function (onSubmit) {
+    // handle pipe input
+    if (!stdin.isTTY || !stdout.isTTY) {
+      reader.prompt()
 
-    if (last && last.role == role) {
-      last.content += content
-    } else {
-      log.push({ role, content })
+      if (config.delimiter) {
+        stdout.write(config.delimiter + '\n')
+        states.block = true
+      }
+
+      stdin.on('end', () => {
+        if (config.delimiter) {
+          stdout.write(config.delimiter + '\n')
+          states.block = false
+        }
+
+        submit(onSubmit, false)
+      })
     }
 
-    while (log.length > config.terminal.MESSAGES_MAX_SIZE) {
-      log.splice(0, 1)
-    }
+    // handle Ctrl-C
+    reader.on('SIGINT', () => {
+      close()
+
+      stdout.write(config.exitMessage + '\n')
+    })
+
+    // enter new line
+    reader.on('line', (line) => {
+      if (line == '' && inputs.length == 0) {
+        reader.prompt()
+        return
+      }
+
+      if (line != config.delimiter) {
+        inputs.push(line)
+      }
+
+      if (config.delimiter && line == config.delimiter) {
+        states.block = !states.block
+      }
+
+      if (states.block) {
+        reader.prompt()
+        return
+      }
+
+      submit(onSubmit, true)
+    })
+
+    reader.prompt()
   }
 
-  const submit = function (onSubmit) {
-    const content = lines.join('\n').trim()
+  const submit = function (onSubmit, reopen) {
+    const content = inputs.join('\n').trim()
 
     if (content.length > 0) {
-      memorize('user', lines.join('\n'))
-      lines.length = 0
+      inputs = []
 
       reader.pause()
-      stdout.write('\n')
 
-      onSubmit(log)
+      if (config.spaced)
+        stdout.write('\n')
+
+      stdout.write(config.outputColor)
+
+      onSubmit(content, () => {
+        stdout.write(colors.DEFAULT)
+
+        if (reopen) {
+          if (config.spaced)
+            stdout.write('\n')
+
+          reader.resume()
+          reader.prompt()
+        }
+      })
     }
-  }
-
-  const write = function (body) {
-    reader.write(`${body}\n`)
-
-    if (isBlock)
-      reader.write('\n')
-  }
-
-  const receive = function (body) {
-    const output = format(config.terminal.OUTPUT_TEMPLATE, body)
-
-    memorize('assistant', body)
-
-    stdout.write(output)
-  }
-
-  const ready = function () {
-    if (reader.history.length > 0)
-      stdout.write('\n')
-
-    reader.resume()
-    reader.prompt()
   }
 
   const close = function () {
     reader.close()
   }
 
-  const listen = function (onSubmit) {
-    // pipe operator mode
-
-    if (!stdin.isTTY || !stdout.isTTY) {
-      reader.prompt()
-
-      stdout.write(delimiter + '\n')
-      isBlock = true
-
-      stdin.on('end', () => {
-        stdout.write(delimiter + '\n')
-        isBlock = false
-
-        submit(onSubmit)
-      })
-    }
-
-    reader.on('SIGINT', () => {
-      close()
-
-      stdout.write(config.terminal.EXIT_MESSAGE + '\n')
-    })
-
-    reader.on('line', (line) => {
-      if (line == '' && lines.length == 0) {
-        reader.prompt()
-        return
-      }
-
-      if (line == delimiter) {
-        isBlock = !isBlock
-      }
-
-      if (line != delimiter) {
-        lines.push(line)
-      }
-
-      if (!isBlock) {
-        submit(onSubmit)
-      } else {
-        reader.prompt()
-      }
-    })
-
-    reader.prompt()
+  const input = function (body = '') {
+    reader.write(`${body}\n`)
   }
 
-  return { listen, write, receive, ready, close }
+  const output = function (body) {
+    stdout.write(`${config.outputColor}${body}${colors.DEFAULT}`)
+  }
+
+  return { listen, close, input, output }
 }

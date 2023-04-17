@@ -3,33 +3,47 @@ import { exit } from 'node:process'
 import config from './config.js'
 
 export function createChat() {
+  let response
+
+  const openai = new OpenAIApi(
+    new Configuration({
+      apiKey: config.OPENAI_API_KEY
+    })
+  )
+
   const warn = function (message, description = null) {
-    console.log(config.api.ERROR_LABEL, message)
+    console.log(config.ERROR_LABEL, message)
 
     if (description)
       console.log(description)
   }
 
-  const formatMessages = function (body) {
-    return typeof body === 'string'
-      ? [{ role: 'user', content: body }]
-      : body
+  const storeMessage = function (role, content) {
+    const last = global.messages[global.messages.length - 1]
+
+    if (last && last.role == role) {
+      last.content += content
+
+      return
+    }
+
+    if (global.messages.length == config.MESSAGES_PER_CONVERSATION) {
+      global.messages.splice(0, 1)
+    }
+
+    global.messages.push({ role, content })
   }
 
   const requestStream = async function (body, callbacks = {}) {
-    let response
+    global.messages ||= []
 
-    const openai = new OpenAIApi(
-      new Configuration({
-        apiKey: config.api.API_KEY
-      })
-    )
+    storeMessage('user', body)
 
     try {
       response = await openai.createChatCompletion(
         {
-          model: config.api.OPENAI_MODEL,
-          messages: formatMessages(body),
+          model: config.OPENAI_MODEL,
+          messages: global.messages,
           stream: true,
         },
         { responseType: 'stream' }
@@ -68,6 +82,8 @@ export function createChat() {
             const content = delta.choices[0].delta?.content
 
             if (content !== undefined) {
+              storeMessage('assistant', content)
+
               callbacks.data(content)
             }
           } catch (error) {
