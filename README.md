@@ -37,6 +37,8 @@ $ git diff | gptie -q "Explain me the changes"
 
 ## Arguments
 
+- `-h`, `--help` - Show help
+- `-v`, `--version` - Show Version
 - `-q "QUERY"` - Query mode
 
 ```shell
@@ -53,23 +55,19 @@ $ gptie -d "==="
 > put "Hello World"
 > ===
 ```
-
-- Pipe operator
-
-```shell
-$ git diff | gptie
-```
+- `-m "MODEL"` - Override OpenAI model
 
 ## Configuration
 
 - `OPENAI_API_KEY`: OpenAI API key **(required)**
-- `GPTIE_OPENAI_MODEL`: Specify GPT model in OpenAI (default: `'gpt-3.5-turbo'`)
 - `GPTIE_DEFAULT_DELIMITER`: Define block delimiter (default: `'---'`)
 - `GPTIE_MESSAGES_PER_CONVERSATION`: Define the max number of messages send on request payload
   (default: `'16'`)
+- `GPTIE_OPENAI_MODEL`: Specify GPT model on chat requests (default: `'gpt-3.5-turbo'`)
+- `GPTIE_OPENAI_TEMPERATURE`: Specify GPT temperature on chat requests (default: `'1'`)
 
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2017-present, Alexandre Magro
+Copyright (c) 2023-present, Alexandre Magro

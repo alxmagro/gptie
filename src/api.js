@@ -2,7 +2,7 @@ import { Configuration, OpenAIApi } from 'openai'
 import { exit } from 'node:process'
 import config from './config.js'
 
-export function createChat() {
+export function createChat(model) {
   let response
 
   const openai = new OpenAIApi(
@@ -42,7 +42,8 @@ export function createChat() {
     try {
       response = await openai.createChatCompletion(
         {
-          model: config.OPENAI_MODEL,
+          model: model || config.OPENAI_MODEL,
+          temperature: Number(config.OPENAI_TEMPERATURE),
           messages: global.messages,
           stream: true,
         },

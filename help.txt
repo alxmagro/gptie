@@ -1,0 +1,20 @@
+Usage: gptie [OPTIONS]
+
+Options:
+  -h, --help                       Show this help message
+  -v, --version                    Show version of the program
+  -q, --query "QUERY"              Query mode with a specific prompt for OpenAI GPT
+  -d, --delimiter "DELIMITER"      Define delimiter to separate inputs/questions and generated model by OpenAI
+  -m, --model "MODEL"              Define the model used to generate responses by OpenAI
+                                  (Default: 'gpt-3.5-turbo')
+
+Options for Environment Variables:
+  OPENAI_API_KEY                   OpenAI API key (required)
+  GPTIE_OPENAI_MODEL               Define the default model to be used on chat requests with OpenAI
+                                  (Default: 'gpt-3.5-turbo')
+  GPTIE_OPENAI_TEMPERATURE         Define the default temperature to be used on chat requests with OpenAI
+                                  (Default: '1')
+  GPTIE_DEFAULT_DELIMITER          Define the delimiter to be used to separate inputs
+                                  (Default: '---')
+  GPTIE_MESSAGES_PER_CONVERSATION  Define the max number of messages to be sent on request payload
+                                  (Default: '16')
