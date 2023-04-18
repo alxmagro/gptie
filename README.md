@@ -57,18 +57,27 @@ $ gptie -d "==="
 > ===
 ```
 
-
 ## Configuration
 
-- `OPENAI_API_KEY`: OpenAI API key **(required)**
-- `GPTIE_DEFAULT_DELIMITER`: Define block delimiter (default: `'---'`)
-- `GPTIE_MESSAGES_PER_CONVERSATION`: Define the max number of messages send on request payload
-  (default: `'16'`)
-- `GPTIE_OPENAI_MODEL`: Specify GPT model on chat requests (default: `'gpt-3.5-turbo'`)
-- `GPTIE_OPENAI_TEMPERATURE`: Specify GPT temperature on chat requests (default: `'1'`)
-- `GPTIE_OUTPUT_COLOR_NAME`: Override default output color. Standard colors are available:
-  [`'DEFAULT'`, `'BLACK'`, `'RED'`, `'GREEN'`, `'YELLOW'`, `'BLUE'`, `'MAGENTA'`, `'CYAN'`,
-  `'WHITE'`]
+`OPENAI_API_KEY`
+  - OpenAI API key **(required)**
+
+`GPTIE_DEFAULT_DELIMITER`
+  - Define block delimiter *(default: `'---'`)*
+
+`GPTIE_MESSAGES_PER_CONVERSATION`
+  - Define the max number of messages send on request payload
+  *(default: `'16'`)*
+
+`GPTIE_OPENAI_MODEL`
+  - Specify GPT model on chat requests *(default: `'gpt-3.5-turbo'`)*
+
+`GPTIE_OPENAI_TEMPERATURE`
+  - Specify GPT temperature on chat requests *(default: `'1'`)*
+
+`GPTIE_OUTPUT_COLOR_NAME`
+  - Override default output color. Standard colors are available: [`'DEFAULT'`, `'BLACK'`, `'RED'`,
+  `'GREEN'`, `'YELLOW'`, `'BLUE'`, `'MAGENTA'`, `'CYAN'`, `'WHITE'`]
 
 ## License
 
