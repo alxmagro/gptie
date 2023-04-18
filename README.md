@@ -1,6 +1,12 @@
-# GPTie
+<p align="center">
+  <img src="assets/logo.svg"/>
 
-User-friendly command-line client for the ChatGPT.
+</p>
+
+<p align="center">
+  An user-friendly command-line client for the ChatGPT.
+</p>
+
 
 ## Installation
 
@@ -15,30 +21,25 @@ npm install -g gptie
 
 ## Basic Usage
 
-Just type, use `---` delimiter to write multiple lines, and `Ctrl-C` to exit:
+Just type, use `---` delimiter to write multiple lines, and `Ctrl-C` to exit.
 
 <p align="center">
-  <img src="assets/example.png"/>
+  <img src="assets/example-basic.png"/>
 </p>
 
 ## Advanced Usage
 
-Append `stderr` to query to understand the errors:
+Redirect `stdout` or `stderr` with pipe (`|`), and preprend a message with argument `-q`.
 
-```shell
-$ node ./bug.js |& gptie -q "What is the error?"
-```
-
-Append `stdout` to query to understand the changes or to generate the commit message:
-
-```shell
-$ git diff | gptie -q "Explain me the changes"
-```
+<p align="center">
+  <img src="assets/example-advanced.png"/>
+</p>
 
 ## Arguments
 
 - `-h`, `--help` - Show help
 - `-v`, `--version` - Show Version
+- `-m "MODEL"` - Override OpenAI model
 - `-q "QUERY"` - Query mode
 
 ```shell
@@ -55,7 +56,7 @@ $ gptie -d "==="
 > put "Hello World"
 > ===
 ```
-- `-m "MODEL"` - Override OpenAI model
+
 
 ## Configuration
 
