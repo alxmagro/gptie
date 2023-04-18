@@ -19,4 +19,4 @@ Options for Environment Variables:
   GPTIE_OPENAI_TEMPERATURE         Define the default temperature to be used on chat requests with OpenAI
                                   (Default: '1')
   GPTIE_OUTPUT_COLOR_NAME          Define the output color. Standard colors are available:
-                                  [DEFAULT, BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE]
+                                  (Availables: DEFAULT, BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE)
