@@ -1,33 +1,37 @@
 #!/usr/bin/env node
 import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { argv, stdin, stdout, exit } from 'node:process'
-import { createChat } from './src/api.js'
-import { createTerminal, colors } from './src/terminal.js'
-import config from './src/config.js'
+
+import { createChat } from '../src/api.js'
+import { createTerminal, colors } from '../src/terminal.js'
+import config from '../src/config.js'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // arguments
 
-const version   = argv.includes('-v') || argv.includes('--version')
-const help      = (argv.includes('-h') || argv.includes('--help'))
+const showVer   = argv.includes('-v') || argv.includes('--version')
+const showHelp  = (argv.includes('-h') || argv.includes('--help'))
 const model     = argv.includes('-m') ? argv[argv.indexOf('-m') + 1] : null
 const query     = argv.includes('-q') ? argv[argv.indexOf('-q') + 1] : null
 const delimiter = argv.includes('-d') ? argv[argv.indexOf("-d") + 1] : config.DEFAULT_DELIMITER
-const pipeinput = !stdin.isTTY || !stdout.isTTY
+const hasPipe   = !stdin.isTTY || !stdout.isTTY
 
-if (help) {
-  console.log(fs.readFileSync('./help.txt', 'utf8'))
+if (showHelp) {
+  const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
+
+  console.log(help);
   exit(0)
 }
 
-if (version) {
-  console.log('v' + JSON.parse(fs.readFileSync('./package.json')).version)
-  exit(0)
-}
+if (showVer) {
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'))
 
-if (config.OUTPUT_COLOR_NAME && !colors[config.OUTPUT_COLOR_NAME]) {
-  console.log('GPTIE_OUTPUT_COLOR_NAME not found: ' + config.OUTPUT_COLOR_NAME)
-  console.log('Available colors: ' + Object.keys(colors).join(', '))
-  console.log()
+  console.log('v' + pkg.version)
+  exit(0)
 }
 
 const terminal = createTerminal('gptie ', {
@@ -59,5 +63,5 @@ if (query) {
   terminal.input(query)
 
   // split query and pipe messages
-  if (pipeinput) terminal.input()
+  if (hasPipe) terminal.input()
 }
