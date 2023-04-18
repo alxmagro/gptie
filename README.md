@@ -76,8 +76,8 @@ $ gptie -d "==="
   - Specify GPT temperature on chat requests *(default: `'1'`)*
 
 `GPTIE_OUTPUT_COLOR_NAME`
-  - Override default output color. Standard colors are available: [`'DEFAULT'`, `'BLACK'`, `'RED'`,
-  `'GREEN'`, `'YELLOW'`, `'BLUE'`, `'MAGENTA'`, `'CYAN'`, `'WHITE'`]
+  - Override default output color *(availables: `'DEFAULT'`, `'BLACK'`, `'RED'` `'GREEN'`,
+  `'YELLOW'`, `'BLUE'`, `'MAGENTA'`, `'CYAN'`, `'WHITE'`)*
 
 ## License
 
