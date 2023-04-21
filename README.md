@@ -79,11 +79,6 @@ Specify GPT model on chat requests *(default: `'gpt-3.5-turbo'`)*
 
 Specify GPT temperature on chat requests *(default: `'1'`)*
 
-- `GPTIE_OUTPUT_COLOR_NAME`
-
-Override default output color *(availables: `'DEFAULT'`, `'BLACK'`, `'RED'` `'GREEN'`,
-  `'YELLOW'`, `'BLUE'`, `'MAGENTA'`, `'CYAN'`, `'WHITE'`)*
-
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)

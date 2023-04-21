@@ -1,8 +1,8 @@
 import readline from 'readline'
 import { stdin, stdout } from 'node:process'
-import { format } from 'node:util'
+import { EventEmitter } from 'node:events'
 
-export const colors = {
+const colors = {
   DEFAULT: '\x1b[0m',
   BLACK:   '\x1b[30m',
   RED:     '\x1b[31m',
@@ -14,119 +14,117 @@ export const colors = {
   WHITE:   '\x1b[37m'
 }
 
-export function createTerminal(prompt, options = {}) {
-  const states = {
-    input: false,
-    block: false
+const labels = {
+  IDLE: '$ ',
+  BLOCK: '│ ',
+  ENDBLOCK: '└ '
+}
+
+export function createTerminal (options = {}) {
+  const terminal = {}
+  const emmiter = new EventEmitter()
+
+  let reader = null
+  let output = []
+  let block = false
+  let delimiter = options.delimiter
+
+  const colorize = function (message) {
+    return colors.CYAN + message + colors.DEFAULT
   }
-  const config = {
-    delimiter: options.delimiter || false,
-    spaced: options.spaced || false,
-    exitMessage: options.exitMessage || '^C',
-    promptColor: options.promptColor || colors.DEFAULT,
-    outputColor: options.outputColor || colors.DEFAULT
+
+  const formatLine = function (label, line) {
+    stdout.write('\x1b[1A\x1b[2K')
+    stdout.write(colorize(label + line))
+    stdout.write('\n')
   }
-  const reader = readline.createInterface({
-    input: stdin,
-    output: stdout,
-    history: [],
-    prompt: `${config.promptColor}${prompt}${colors.DEFAULT}`
-  })
 
-  let inputs = []
+  terminal.open = function () {
+    const { ask, emit } = this
 
-  // listen user input
-  const listen = function (onSubmit) {
-    // handle pipe input
-    if (!stdin.isTTY || !stdout.isTTY) {
-      reader.prompt()
+    reader = readline.createInterface({
+      input: stdin,
+      output: stdout,
+      history: []
+    })
 
-      if (config.delimiter) {
-        stdout.write(config.delimiter + '\n')
-        states.block = true
-      }
-
-      stdin.on('end', () => {
-        if (config.delimiter) {
-          stdout.write(config.delimiter + '\n')
-          states.block = false
-        }
-
-        submit(onSubmit, false)
-      })
-    }
-
-    // handle Ctrl-C
+    // Handle Ctrl-C
     reader.on('SIGINT', () => {
-      close()
+      reader.close()
 
-      stdout.write(config.exitMessage + '\n')
+      stdout.write('^C\n')
     })
 
-    // enter new line
+    // Enter new line
     reader.on('line', (line) => {
-      if (line == '' && inputs.length == 0) {
-        reader.prompt()
-        return
+      if (line === '' && output.length === 0) {
+        return ask()
       }
 
-      if (line != config.delimiter) {
-        inputs.push(line)
+      // delimiter input
+
+      if (delimiter) {
+        if (line === delimiter) {
+          block = !block
+
+          if (block) {
+            formatLine(labels.IDLE, line)
+
+            return ask()
+          }
+
+          else {
+            formatLine(labels.ENDBLOCK, line)
+
+            stdout.write('\n') // space input/output
+
+            return emit()
+          }
+        } else {
+          output.push(line)
+        }
       }
 
-      if (config.delimiter && line == config.delimiter) {
-        states.block = !states.block
-      }
+      // valid input
 
-      if (states.block) {
-        reader.prompt()
-        return
-      }
+      if (block) {
+        formatLine(labels.BLOCK, line)
 
-      submit(onSubmit, true)
+        return ask()
+      } else {
+        formatLine(labels.IDLE, line)
+
+        stdout.write('\n') // space input/output
+
+        return emit()
+      }
     })
 
+    this.ask()
+  }
+
+  terminal.close = function () {
+    reader && reader.close()
+  }
+
+  terminal.on = function (event, listener) {
+    return emmiter.on(event, listener)
+  }
+
+  terminal.emit = function () {
+    emmiter.emit('submit', output.join('\n').trim())
+
+    output = []
+  }
+
+  terminal.ask = function () {
+    reader.setPrompt(colorize(!block ? labels.IDLE : labels.BLOCK))
     reader.prompt()
   }
 
-  const submit = function (onSubmit, reopen) {
-    const content = inputs.join('\n').trim()
-
-    if (content.length > 0) {
-      inputs = []
-
-      reader.pause()
-
-      if (config.spaced)
-        stdout.write('\n')
-
-      stdout.write(config.outputColor)
-
-      onSubmit(content, () => {
-        stdout.write(colors.DEFAULT)
-
-        if (reopen) {
-          if (config.spaced)
-            stdout.write('\n')
-
-          reader.resume()
-          reader.prompt()
-        }
-      })
-    }
+  terminal.push = function (text) {
+    output.push(text)
   }
 
-  const close = function () {
-    reader.close()
-  }
-
-  const input = function (body = '') {
-    reader.write(`${body}\n`)
-  }
-
-  const output = function (body) {
-    stdout.write(body)
-  }
-
-  return { listen, close, input, output }
+  return terminal
 }

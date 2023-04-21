@@ -1,67 +1,58 @@
 #!/usr/bin/env node
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { argv, stdin, stdout, exit } from 'node:process'
+import { stdin, stdout, exit } from 'node:process'
 
 import { createChat } from '../src/api.js'
-import { createTerminal, colors } from '../src/terminal.js'
-import config from '../src/config.js'
+import { createTerminal } from '../src/terminal.js'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { readFile, getFlag, getParam } from '../src/helpers.js'
+import config from '../src/config.js'
 
 // arguments
 
-const showVer   = argv.includes('-v') || argv.includes('--version')
-const showHelp  = (argv.includes('-h') || argv.includes('--help'))
-const model     = argv.includes('-m') ? argv[argv.indexOf('-m') + 1] : null
-const query     = argv.includes('-q') ? argv[argv.indexOf('-q') + 1] : null
-const delimiter = argv.includes('-d') ? argv[argv.indexOf("-d") + 1] : config.DEFAULT_DELIMITER
-const hasPipe   = !stdin.isTTY || !stdout.isTTY
+const flagHelp       = getFlag('-h', '--help')
+const flagVersion    = getFlag('-v', '--version')
+const model          = getParam('-m')
+const query          = getParam('-q')
+const delimiter      = getParam('-d', config.DEFAULT_DELIMITER)
+const noninteractive = query || !stdin.isTTY || !stdout.isTTY
 
-if (showHelp) {
-  const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
-
-  console.log(help);
+if (flagHelp) {
+  console.log(readFile('help.txt', { local: true }))
   exit(0)
 }
 
-if (showVer) {
-  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'))
-
-  console.log('v' + pkg.version)
+if (flagVersion) {
+  console.log('v' + JSON.parse(readFile('../package.json', { local: true })))
   exit(0)
 }
 
-const terminal = createTerminal('gptie ', {
-  delimiter: delimiter,
-  spaced: true,
-  promptColor: colors.CYAN,
-  outputColor: colors[config.OUTPUT_COLOR_NAME] || colors.GREEN
-})
 const { requestStream } = createChat(model)
+const terminal = createTerminal({ delimiter: delimiter })
 
-terminal.listen((input, done) => {
+terminal.on('submit', (input) => {
   requestStream(input, {
-    data: (content) => {
-      terminal.output(content)
-    },
-
+    data: (chunk) => stdout.write(chunk),
     done: () => {
-      if (!query) done()
-    },
+      if (noninteractive)
+        terminal.close()
 
-    fail: (err) => {
-      terminal.close()
-      console.log('\n' + config.ERROR_LABEL, err)
-    }
+      else
+        stdout.write('\n') && terminal.ask()
+    },
+    fail: (error) => console.error(config.ERROR_LABEL, error) && exit(1)
   })
 })
 
-if (query) {
-  terminal.input(query)
+if (noninteractive) {
+  if (query)
+    terminal.push(query + '\n')
 
-  // split query and pipe messages
-  if (hasPipe) terminal.input()
+  if (!stdin.isTTY)
+    terminal.push(readFile(0))
+
+  terminal.emit()
+}
+
+else {
+  terminal.open()
 }
