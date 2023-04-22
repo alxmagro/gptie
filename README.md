@@ -32,7 +32,11 @@ Just type, use `---` delimiter to write multiple lines, and `Ctrl-C` to exit.
 Redirect `stdout` or `stderr` with pipe (`|`), and preprend a message with argument `-q`.
 
 <p align="center">
-  <img src="assets/example-advanced.png"/>
+  <img src="assets/example-stdout.png"/>
+</p>
+
+<p align="center">
+  <img src="assets/example-stderr.png"/>
 </p>
 
 ## Arguments
