@@ -1,18 +1,22 @@
 import { Configuration, OpenAIApi } from 'openai'
 import { exit } from 'node:process'
-import config from './config.js'
+import { env } from 'node:process'
+
+const OPENAI_API_KEY = env.OPENAI_API_KEY
+const MESSAGES_PER_CONVERSATION = env.GPTIE_MESSAGES_PER_CONVERSATION || '16'
+const OPENAI_TEMPERATURE = env.GPTIE_OPENAI_TEMPERATURE || '1'
 
 export function createChat(model) {
   let response
 
   const openai = new OpenAIApi(
     new Configuration({
-      apiKey: config.OPENAI_API_KEY
+      apiKey: OPENAI_API_KEY
     })
   )
 
   const warn = function (message, description = null) {
-    console.log(config.ERROR_LABEL, message)
+    console.log('\x1b[31mERROR\x1b[0m', message)
 
     if (description)
       console.log(description)
@@ -27,7 +31,7 @@ export function createChat(model) {
       return
     }
 
-    if (global.messages.length == config.MESSAGES_PER_CONVERSATION) {
+    if (global.messages.length == MESSAGES_PER_CONVERSATION) {
       global.messages.splice(0, 1)
     }
 
@@ -42,8 +46,8 @@ export function createChat(model) {
     try {
       response = await openai.createChatCompletion(
         {
-          model: model || config.OPENAI_MODEL,
-          temperature: Number(config.OPENAI_TEMPERATURE),
+          model: model,
+          temperature: Number(OPENAI_TEMPERATURE),
           messages: global.messages,
           stream: true,
         },
@@ -94,7 +98,7 @@ export function createChat(model) {
       }
     })
     response.data.on('end', () => callbacks.done())
-    response.data.on('error', (error) => callbacks.fail(error))
+    response.data.on('error', (error) => warn(error) && exit(1))
   }
 
   return { requestStream }

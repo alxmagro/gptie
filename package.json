@@ -11,7 +11,7 @@
   ],
   "main": "index.js",
   "type": "module",
-  "bin": "bin/cli.js",
+  "bin": "cli.js",
   "author": "Alexandre Magro <alexandremagro@live.com>",
   "license": "MIT",
   "repository": {

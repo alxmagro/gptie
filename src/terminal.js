@@ -20,14 +20,13 @@ const labels = {
   ENDBLOCK: '└ '
 }
 
-export function createTerminal (options = {}) {
+export function createTerminal (delimiter) {
   const terminal = {}
   const emmiter = new EventEmitter()
 
   let reader = null
   let output = []
   let block = false
-  let delimiter = options.delimiter
 
   const colorize = function (message) {
     return colors.CYAN + message + colors.DEFAULT
